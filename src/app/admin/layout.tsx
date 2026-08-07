@@ -31,7 +31,8 @@ import {
  * Organized by feature area with support for active state detection
  */
 const getNavItems = (pathname: string): SidebarNavItem[] => {
-  const isActive = (href: string): boolean => {
+  const isActive = (href: string, exact: boolean = false): boolean => {
+    if (exact) return pathname === href;
     if (href === "/admin") return pathname === "/admin";
     return pathname.startsWith(href);
   };
@@ -41,13 +42,27 @@ const getNavItems = (pathname: string): SidebarNavItem[] => {
       href: "/admin",
       label: "Dashboard",
       icon: <LayoutDashboard className="h-4 w-4" />,
-      active: isActive("/admin"),
+      active: isActive("/admin", true),
     },
     {
-      href: "/admin/orders",
+      href: "/admin/pedidos",
       label: "Pedidos",
       icon: <ShoppingCart className="h-4 w-4" />,
-      active: isActive("/admin/orders"),
+      active: isActive("/admin/pedidos"),
+      submenu: [
+        {
+          href: "/admin/pedidos/salao",
+          label: "Salão",
+        },
+        {
+          href: "/admin/pedidos/delivery",
+          label: "Delivery",
+        },
+        {
+          href: "/admin/pedidos/balcao",
+          label: "Balcão",
+        },
+      ],
     },
     {
       href: "/admin/mesas",
@@ -56,46 +71,10 @@ const getNavItems = (pathname: string): SidebarNavItem[] => {
       active: isActive("/admin/mesas"),
     },
     {
-      href: "/admin/menu",
+      href: "/admin/cardapio/produtos",
       label: "Cardápio",
       icon: <UtensilsCrossed className="h-4 w-4" />,
-      active: isActive("/admin/menu"),
-    },
-    {
-      href: "/admin/customers",
-      label: "Clientes",
-      icon: <Users className="h-4 w-4" />,
-      active: isActive("/admin/customers"),
-    },
-    {
-      href: "/admin/logistics",
-      label: "Dashboard Logístico",
-      icon: <Truck className="h-4 w-4" />,
-      active: isActive("/admin/logistics"),
-    },
-    {
-      href: "/admin/inventory",
-      label: "Estoque",
-      icon: <Package className="h-4 w-4" />,
-      active: isActive("/admin/inventory"),
-    },
-    {
-      href: "/admin/financial",
-      label: "Financeiro",
-      icon: <DollarSign className="h-4 w-4" />,
-      active: isActive("/admin/financial"),
-    },
-    {
-      href: "/admin/people",
-      label: "Pessoas",
-      icon: <Users2 className="h-4 w-4" />,
-      active: isActive("/admin/people"),
-    },
-    {
-      href: "/admin/reports",
-      label: "Relatórios",
-      icon: <BarChart3 className="h-4 w-4" />,
-      active: isActive("/admin/reports"),
+      active: isActive("/admin/cardapio"),
     },
     {
       href: "/admin/settings",

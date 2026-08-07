@@ -28,11 +28,13 @@ interface TableData {
 }
 
 interface ApiResponse {
-  data: TableData[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
+  success: boolean;
+  data: {
+    tables: TableData[];
+    total: number;
+    page: number;
+    limit: number;
+  };
 }
 
 function formatCurrency(value: number) {
@@ -139,9 +141,9 @@ export default function MesasPage() {
       }
 
       const data: ApiResponse = await response.json();
-      setTables(data.data);
-      setPage(data.page);
-      setTotalPages(data.totalPages);
+      setTables(data.data.tables);
+      setPage(data.data.page);
+      setTotalPages(Math.ceil(data.data.total / data.data.limit));
     } catch (err) {
       const message = err instanceof Error ? err.message : "Erro desconhecido";
       setError(message);
