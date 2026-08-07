@@ -10,10 +10,22 @@ const buttonVariants = cva(
       variant: {
         default:
           "bg-primary text-primary-foreground hover:bg-[color-mix(in_oklch,var(--primary),black_12%)]",
-        outline:
-          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+        primary:
+          "bg-primary text-primary-foreground hover:bg-[color-mix(in_oklch,var(--primary),black_12%)]",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+        success:
+          "bg-success text-success-foreground hover:bg-[color-mix(in_oklch,var(--success),black_12%)] focus-visible:border-success focus-visible:ring-success/50",
+        warning:
+          "bg-warning text-warning-foreground hover:bg-[color-mix(in_oklch,var(--warning),black_12%)] focus-visible:border-warning focus-visible:ring-warning/50",
+        danger:
+          "bg-error text-error-foreground hover:bg-[color-mix(in_oklch,var(--error),black_12%)] focus-visible:border-error focus-visible:ring-error/50",
+        error:
+          "bg-error text-error-foreground hover:bg-[color-mix(in_oklch,var(--error),black_12%)] focus-visible:border-error focus-visible:ring-error/50",
+        info:
+          "bg-info text-info-foreground hover:bg-[color-mix(in_oklch,var(--info),black_12%)] focus-visible:border-info focus-visible:ring-info/50",
+        outline:
+          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
         ghost:
           "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
         destructive:
