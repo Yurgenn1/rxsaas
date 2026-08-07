@@ -57,12 +57,27 @@ export function ProductRow({ id, name, description, image, basePrice, sizeOption
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex items-center gap-3 p-3 w-full text-left hover:bg-slate-50 dark:hover:bg-slate-800/60 transition"
+        className="flex flex-col text-left w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden hover:shadow-md transition"
       >
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-sm text-slate-900 dark:text-slate-50 truncate">{name}</h3>
+        <div className="relative w-full aspect-square bg-slate-100 dark:bg-slate-800 shrink-0">
+          {image ? (
+            <Image
+              src={image}
+              alt={name}
+              fill
+              className="object-cover"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-slate-300 dark:text-slate-600 text-xs">
+              Sem foto
+            </div>
+          )}
+        </div>
+        <div className="p-3 flex flex-col flex-1">
+          <h3 className="font-semibold text-sm text-slate-900 dark:text-slate-50 line-clamp-1">{name}</h3>
           {description && (
-            <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-0.5 flex-1">
               {description}
             </p>
           )}
@@ -71,11 +86,6 @@ export function ProductRow({ id, name, description, image, basePrice, sizeOption
             {formatCurrency(displayPrice)}
           </p>
         </div>
-        {image && (
-          <div className="relative size-20 shrink-0 rounded-lg overflow-hidden">
-            <Image src={image} alt={name} fill className="object-cover" sizes="80px" />
-          </div>
-        )}
       </button>
 
       <Sheet open={open} onOpenChange={setOpen}>

@@ -85,7 +85,7 @@ export default async function CardapioPage() {
                 </p>
               )}
 
-              <div className="divide-y divide-slate-200 dark:divide-slate-800 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {category.products.map((product) => {
                   const sizeGroup = product.optionGroups.find((g) => g.type === "SIZE");
                   return (
