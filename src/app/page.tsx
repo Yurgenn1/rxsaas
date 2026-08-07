@@ -1,195 +1,141 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
-import { ChefHat, TrendingUp, Users, Zap } from 'lucide-react';
+import { ChefHat } from 'lucide-react';
 
 export default function LandingPage() {
-  const [isHovering, setIsHovering] = useState(false);
-
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
-      {/* Animated Background Waves */}
+    <div className="relative min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 overflow-hidden flex flex-col">
+      {/* Animated DNA Background */}
       <div className="absolute inset-0 overflow-hidden">
         <svg
-          className="absolute w-full h-full"
-          viewBox="0 0 1200 600"
-          preserveAspectRatio="none"
+          className="absolute w-full h-full opacity-20 animate-rotate-slow"
+          viewBox="0 0 400 600"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Wave 1 - Bottom */}
           <defs>
-            <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" style={{ stopColor: '#8B5CF6', stopOpacity: 0.3 }} />
-              <stop offset="100%" style={{ stopColor: '#6D28D9', stopOpacity: 0.1 }} />
+            <linearGradient id="dna-grad-1" x1="0%" y1="0%" x2="100%">
+              <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#A855F7" stopOpacity="0.3" />
             </linearGradient>
-            <linearGradient id="grad2" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" style={{ stopColor: '#A78BFA', stopOpacity: 0.2 }} />
-              <stop offset="100%" style={{ stopColor: '#7C3AED', stopOpacity: 0.05 }} />
+            <linearGradient id="dna-grad-2" x1="0%" y1="0%" x2="100%">
+              <stop offset="0%" stopColor="#EC4899" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#F43F5E" stopOpacity="0.3" />
+            </linearGradient>
+            <linearGradient id="dna-grad-3" x1="0%" y1="0%" x2="100%">
+              <stop offset="0%" stopColor="#06B6D4" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#0891B2" stopOpacity="0.3" />
+            </linearGradient>
+            <linearGradient id="dna-grad-4" x1="0%" y1="0%" x2="100%">
+              <stop offset="0%" stopColor="#10B981" stopOpacity="0.8" />
+              <stop offset="100%" stopColor="#059669" stopOpacity="0.3" />
             </linearGradient>
           </defs>
 
-          {/* Wave 1 */}
-          <path
-            d="M0,300 Q300,250 600,300 T1200,300 L1200,600 L0,600 Z"
-            fill="url(#grad1)"
-            className="animate-wave1"
-          />
+          {/* DNA Helix 1 - Cardápio (Purple) */}
+          <path d="M 150 50 Q 120 100 150 150 T 150 250 T 150 350 T 150 450 T 150 550" stroke="url(#dna-grad-1)" strokeWidth="8" fill="none" strokeLinecap="round" />
+          <path d="M 250 50 Q 280 100 250 150 T 250 250 T 250 350 T 250 450 T 250 550" stroke="url(#dna-grad-1)" strokeWidth="8" fill="none" strokeLinecap="round" opacity="0.6" />
 
-          {/* Wave 2 */}
-          <path
-            d="M0,350 Q300,300 600,350 T1200,350 L1200,600 L0,600 Z"
-            fill="url(#grad2)"
-            className="animate-wave2"
-          />
+          {/* DNA Helix 2 - Pedidos (Pink) */}
+          <path d="M 160 100 Q 190 130 160 160 T 160 260 T 160 360 T 160 460 T 160 560" stroke="url(#dna-grad-2)" strokeWidth="8" fill="none" strokeLinecap="round" opacity="0.9" />
+          <path d="M 240 100 Q 210 130 240 160 T 240 260 T 240 360 T 240 460 T 240 560" stroke="url(#dna-grad-2)" strokeWidth="8" fill="none" strokeLinecap="round" opacity="0.5" />
 
-          {/* Wave 3 */}
-          <path
-            d="M0,400 Q300,350 600,400 T1200,400 L1200,600 L0,600 Z"
-            fill="url(#grad1)"
-            className="animate-wave3"
-            opacity="0.5"
-          />
+          {/* DNA Helix 3 - Delivery (Cyan) */}
+          <path d="M 170 120 Q 140 160 170 200 T 170 300 T 170 400 T 170 500" stroke="url(#dna-grad-3)" strokeWidth="8" fill="none" strokeLinecap="round" opacity="0.8" />
+          <path d="M 230 120 Q 260 160 230 200 T 230 300 T 230 400 T 230 500" stroke="url(#dna-grad-3)" strokeWidth="8" fill="none" strokeLinecap="round" opacity="0.4" />
+
+          {/* DNA Helix 4 - Estoque (Green) */}
+          <path d="M 180 140 Q 210 180 180 220 T 180 320 T 180 420" stroke="url(#dna-grad-4)" strokeWidth="8" fill="none" strokeLinecap="round" opacity="0.7" />
+          <path d="M 220 140 Q 190 180 220 220 T 220 320 T 220 420" stroke="url(#dna-grad-4)" strokeWidth="8" fill="none" strokeLinecap="round" opacity="0.3" />
+
+          {/* Connection strands */}
+          <line x1="150" y1="75" x2="250" y2="75" stroke="#8B5CF6" strokeWidth="2" opacity="0.4" />
+          <line x1="160" y1="175" x2="240" y2="175" stroke="#EC4899" strokeWidth="2" opacity="0.4" />
+          <line x1="170" y1="275" x2="230" y2="275" stroke="#06B6D4" strokeWidth="2" opacity="0.4" />
+          <line x1="180" y1="375" x2="220" y2="375" stroke="#10B981" strokeWidth="2" opacity="0.4" />
         </svg>
 
-        {/* Floating Circles */}
-        <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-violet-500/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}} />
+        {/* Glow orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-pink-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-col min-h-screen">
-        {/* Header */}
-        <header className="flex items-center justify-between p-6 md:p-8">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-violet-600 rounded-lg flex items-center justify-center">
-              <ChefHat className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-200 to-violet-400">
+      {/* Header */}
+      <header className="relative z-10 flex items-center justify-between p-6 md:p-8">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-pink-600 rounded-lg flex items-center justify-center shadow-lg">
+            <ChefHat className="w-7 h-7 text-white" />
+          </div>
+          <div>
+            <p className="text-xs text-purple-300 uppercase tracking-widest">Sistema de Gestão</p>
+            <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-200 via-pink-300 to-cyan-300">
               RXSAAS
             </span>
           </div>
+        </div>
+
+        <Link
+          href="/admin"
+          className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold hover:shadow-xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105"
+        >
+          Entrar
+        </Link>
+      </header>
+
+      {/* Content */}
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 md:px-8 pb-12">
+        <div className="text-center max-w-3xl">
+          <h1 className="text-5xl md:text-7xl font-black text-white mb-6 leading-tight">
+            O DNA do seu{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-400 to-cyan-300">
+              Restaurante
+            </span>
+          </h1>
+
+          <p className="text-lg md:text-xl text-slate-300 mb-10 leading-relaxed max-w-2xl mx-auto">
+            Controle total de cardápio, pedidos, estoque, delivery, equipe e financeiro.
+            Um único sistema para toda a operação do seu negócio.
+          </p>
 
           <Link
             href="/admin"
-            className="px-6 py-2 bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-105"
+            className="inline-block px-10 py-4 bg-gradient-to-r from-purple-600 via-pink-600 to-cyan-600 text-white text-lg font-bold rounded-xl hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-110 mb-12"
           >
-            Entrar
+            Começar Agora →
           </Link>
-        </header>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col items-center justify-center px-4 md:px-8">
-          {/* Hero Section */}
-          <div className="text-center max-w-4xl mx-auto mb-12 md:mb-16">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-              Gestão Completa de{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-violet-400 to-purple-300">
-                Restaurante
-              </span>
-            </h1>
-
-            <p className="text-xl md:text-2xl text-purple-100 mb-8 leading-relaxed">
-              Sistema inteligente para controlar cardápio, estoque, pedidos, clientes e equipe.
-              Tudo em um único lugar.
-            </p>
-
-            {/* CTA Button */}
-            <Link
-              href="/admin"
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-              className="inline-block px-8 md:px-12 py-4 bg-gradient-to-r from-purple-500 to-violet-600 text-white text-lg font-semibold rounded-xl hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-110 mb-12"
-            >
-              Começar Agora
-            </Link>
-
-            {/* Features Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-16">
-              {[
-                {
-                  icon: ChefHat,
-                  title: 'Cardápio',
-                  description: 'Organize seus produtos com variações e fichas técnicas',
-                },
-                {
-                  icon: Zap,
-                  title: 'Pedidos',
-                  description: 'Gerencie salão, delivery e balcão em um painel',
-                },
-                {
-                  icon: TrendingUp,
-                  title: 'Análises',
-                  description: 'Controle financeiro e previsões inteligentes',
-                },
-                {
-                  icon: Users,
-                  title: 'Equipe',
-                  description: 'Escalas, folha de pagamento e RH integrado',
-                },
-              ].map((feature, idx) => {
-                const Icon = feature.icon;
-                return (
-                  <div
-                    key={idx}
-                    className="p-6 rounded-xl bg-white/5 backdrop-blur-md border border-purple-400/20 hover:border-purple-400/50 hover:bg-white/10 transition-all duration-300 transform hover:scale-105 group"
-                  >
-                    <Icon className="w-12 h-12 text-purple-300 mb-4 group-hover:text-purple-200 transition-colors" />
-                    <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
-                    <p className="text-sm text-purple-100">{feature.description}</p>
-                  </div>
-                );
-              })}
-            </div>
+          {/* Feature Pills */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-12">
+            {['Cardápio', 'Pedidos', 'Estoque', 'Delivery', 'Clientes', 'Equipe', 'Financeiro', 'Análises'].map((feature, idx) => (
+              <div
+                key={idx}
+                className="px-4 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-purple-400/30 hover:border-purple-400/60 hover:bg-white/10 transition-all duration-300 group cursor-default"
+              >
+                <p className="text-sm font-semibold text-purple-200 group-hover:text-white transition-colors">{feature}</p>
+              </div>
+            ))}
           </div>
         </div>
-
-        {/* Footer */}
-        <footer className="text-center py-8 text-purple-200/60 text-sm">
-          <p>© 2026 RXSAAS. Sistema de gestão de restaurantes.</p>
-        </footer>
       </div>
 
-      {/* CSS Animations */}
+      {/* Footer */}
+      <footer className="relative z-10 text-center py-6 text-slate-500 text-sm border-t border-slate-800">
+        <p>© 2026 RXSAAS — Gestão Inteligente de Restaurantes</p>
+      </footer>
+
       <style>{`
-        @keyframes wave1 {
-          0%, 100% {
-            d: path('M0,300 Q300,250 600,300 T1200,300 L1200,600 L0,600 Z');
+        @keyframes rotateSlow {
+          from {
+            transform: rotate(0deg) scale(1.2);
           }
-          50% {
-            d: path('M0,280 Q300,230 600,280 T1200,280 L1200,600 L0,600 Z');
-          }
-        }
-
-        @keyframes wave2 {
-          0%, 100% {
-            d: path('M0,350 Q300,300 600,350 T1200,350 L1200,600 L0,600 Z');
-          }
-          50% {
-            d: path('M0,330 Q300,280 600,330 T1200,330 L1200,600 L0,600 Z');
+          to {
+            transform: rotate(360deg) scale(1.2);
           }
         }
 
-        @keyframes wave3 {
-          0%, 100% {
-            d: path('M0,400 Q300,350 600,400 T1200,400 L1200,600 L0,600 Z');
-          }
-          50% {
-            d: path('M0,380 Q300,330 600,380 T1200,380 L1200,600 L0,600 Z');
-          }
-        }
-
-        .animate-wave1 {
-          animation: wave1 8s ease-in-out infinite;
-        }
-
-        .animate-wave2 {
-          animation: wave2 10s ease-in-out infinite;
-          animation-delay: 1s;
-        }
-
-        .animate-wave3 {
-          animation: wave3 12s ease-in-out infinite;
-          animation-delay: 2s;
+        .animate-rotate-slow {
+          animation: rotateSlow 20s linear infinite;
+          transform-origin: center;
         }
       `}</style>
     </div>
