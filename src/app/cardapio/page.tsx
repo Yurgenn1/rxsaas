@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { ProductRow } from "@/components/cardapio/product-row";
 import { CartBar } from "@/components/cardapio/cart-bar";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export default async function CardapioPage() {
   const restaurant = await db.restaurant.findUnique({ where: { slug: "default" } });
