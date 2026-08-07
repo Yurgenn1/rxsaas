@@ -13,10 +13,13 @@ export default function Home() {
             <span className="font-bold text-2xl text-slate-900 dark:text-slate-50">RXSAAS</span>
           </div>
           <nav className="flex items-center gap-6">
+            <Link href="/cardapio" className="text-slate-600 dark:text-slate-400 hover:text-[#E85D5D] transition font-medium">
+              Cardápio
+            </Link>
             <Link href="/admin/categories" className="text-slate-600 dark:text-slate-400 hover:text-[#E85D5D] transition font-medium">
               Admin
             </Link>
-            <Link href="/dashboard" className="text-slate-600 dark:text-slate-400 hover:text-[#E85D5D] transition font-medium">
+            <Link href="/admin" className="text-slate-600 dark:text-slate-400 hover:text-[#E85D5D] transition font-medium">
               Dashboard
             </Link>
           </nav>
@@ -37,7 +40,7 @@ export default function Home() {
           </p>
           <div className="flex gap-4 justify-center">
             <Link
-              href="/dashboard"
+              href="/admin"
               className="px-8 py-3 bg-[#E85D5D] hover:bg-[#D84C4C] text-white rounded-lg font-medium transition shadow-md hover:shadow-lg"
             >
               Acessar Dashboard
@@ -93,7 +96,7 @@ export default function Home() {
             Acesse o dashboard agora e comece a gerenciar seu negócio!
           </p>
           <Link
-            href="/dashboard"
+            href="/admin"
             className="inline-block px-8 py-3 bg-[#E85D5D] hover:bg-[#D84C4C] text-white rounded-lg font-medium transition shadow-md hover:shadow-lg"
           >
             Acessar Dashboard Agora

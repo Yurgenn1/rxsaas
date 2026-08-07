@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { mockStore } from "@/lib/mockStore";
+import { categoryService } from "@/services/categoryService";
+import { updateCategorySchema } from "@/lib/validations/category";
 
 export async function GET(
   request: NextRequest,
@@ -7,7 +8,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const category = mockStore.categories.get(id);
+    const category = await categoryService.getCategory(id);
 
     if (!category) {
       return NextResponse.json(
@@ -33,15 +34,9 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
+    const validatedData = updateCategorySchema.parse(body);
 
-    if (!body.name || body.name.trim().length < 2) {
-      throw new Error("Nome deve ter no mínimo 2 caracteres");
-    }
-
-    const category = mockStore.categories.update(id, {
-      name: body.name,
-      description: body.description || null,
-    });
+    const category = await categoryService.updateCategory(id, validatedData);
 
     return NextResponse.json({ success: true, data: category });
   } catch (error: any) {
@@ -59,7 +54,7 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    mockStore.categories.delete(id);
+    await categoryService.deleteCategory(id);
     return NextResponse.json({ success: true, data: { id } });
   } catch (error: any) {
     console.error("Error deleting category:", error);
@@ -79,9 +74,7 @@ export async function PATCH(
     const { action } = await request.json();
 
     if (action === "toggle-active") {
-      const existing = mockStore.categories.get(id);
-      if (!existing) throw new Error("Category not found");
-      const category = mockStore.categories.update(id, { isActive: !existing.isActive });
+      const category = await categoryService.toggleActive(id);
       return NextResponse.json({ success: true, data: category });
     }
 

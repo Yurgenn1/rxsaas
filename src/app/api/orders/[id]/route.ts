@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { mockStore } from "@/lib/mockStore";
+import { orderService } from "@/services/orderService";
+import { updateOrderStatusSchema } from "@/lib/validations/order";
 
 export async function GET(
   request: NextRequest,
@@ -7,7 +8,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const order = mockStore.orders.get(id);
+    const order = await orderService.getOrder(id);
 
     if (!order) {
       return NextResponse.json(
@@ -18,6 +19,7 @@ export async function GET(
 
     return NextResponse.json({ success: true, data: order });
   } catch (error: any) {
+    console.error("Error fetching order:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 }
@@ -34,17 +36,16 @@ export async function PATCH(
     const body = await request.json();
 
     if (body.action === "cancel") {
-      const order = mockStore.orders.cancel(id);
+      const order = await orderService.cancelOrder(id);
       return NextResponse.json({ success: true, data: order });
     }
 
-    if (!body.status) {
-      throw new Error("Status é obrigatório");
-    }
+    const validatedData = updateOrderStatusSchema.parse(body);
+    const order = await orderService.updateOrderStatus(id, validatedData);
 
-    const order = mockStore.orders.updateStatus(id, body.status);
     return NextResponse.json({ success: true, data: order });
   } catch (error: any) {
+    console.error("Error updating order:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 400 }

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { mockStore } from "@/lib/mockStore";
+import { productService } from "@/services/productService";
+import { createProductSchema } from "@/lib/validations/product";
+import { getDefaultRestaurantId } from "@/lib/restaurant";
 
 export async function GET(request: NextRequest) {
   try {
@@ -8,9 +10,9 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "10");
     const search = searchParams.get("search") || "";
     const categoryId = searchParams.get("categoryId") || undefined;
-    const restaurantId = searchParams.get("restaurantId") || "default";
 
-    const result = mockStore.products.list(restaurantId, page, limit, search, categoryId);
+    const restaurantId = await getDefaultRestaurantId();
+    const result = await productService.listProducts(restaurantId, page, limit, search, categoryId);
 
     return NextResponse.json({ success: true, data: result });
   } catch (error) {
@@ -25,26 +27,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const validatedData = createProductSchema.parse(body);
 
-    if (!body.name || body.name.trim().length < 2) {
-      throw new Error("Nome deve ter no mínimo 2 caracteres");
-    }
-    if (body.price === undefined || Number(body.price) <= 0) {
-      throw new Error("Preço deve ser maior que zero");
-    }
-    if (!body.categoryId) {
-      throw new Error("Categoria é obrigatória");
-    }
-
-    const product = mockStore.products.create({
-      name: body.name,
-      description: body.description || null,
-      price: Number(body.price),
-      categoryId: body.categoryId,
-      restaurantId: body.restaurantId || "default",
-      isActive: body.isActive,
-      isFeatured: body.isFeatured,
-    });
+    const restaurantId = await getDefaultRestaurantId();
+    const product = await productService.createProduct(restaurantId, validatedData);
 
     return NextResponse.json({ success: true, data: product }, { status: 201 });
   } catch (error: any) {

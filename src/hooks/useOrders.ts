@@ -4,20 +4,37 @@ import { useState, useCallback, useEffect } from "react";
 import { useDebounce } from "./useDebounce";
 import { fetchWithValidation } from "@/lib/validators";
 
-interface Order {
+export type OrderStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "PREPARING"
+  | "READY"
+  | "COMPLETED"
+  | "CANCELLED";
+
+export interface Order {
   id: string;
+  orderNumber: string;
   restaurantId: string;
   customerId: string;
-  status: "pending" | "confirmed" | "preparing" | "ready" | "completed" | "cancelled";
+  customerName?: string | null;
+  customerPhone?: string | null;
+  status: OrderStatus;
   subtotal: number;
   tax: number;
   discount: number;
   tip: number;
   total: number;
-  orderType: "dine_in" | "takeout" | "delivery";
-  notes?: string;
+  orderType: "PICKUP" | "DELIVERY" | "DINE_IN";
+  deliveryAddress?: string | null;
+  tableId?: string | null;
+  table?: { id: string; number: number } | null;
+  comandaNumber?: number | null;
+  paymentMethod?: string | null;
+  notes?: string | null;
   createdAt: string;
   updatedAt: string;
+  items?: { id: string; quantity: number; unitPrice: number; productId: string; product?: { name: string } }[];
 }
 
 export function useOrders(restaurantId: string = "default", statusFilter?: string) {

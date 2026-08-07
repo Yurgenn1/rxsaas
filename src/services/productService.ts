@@ -1,6 +1,11 @@
 import { db } from "@/lib/db";
 import { CreateProductInput, UpdateProductInput } from "@/lib/validations/product";
 
+// Prisma retorna price como Decimal; o frontend espera number.
+function serializeProduct<T extends { price: unknown }>(product: T) {
+  return { ...product, price: Number(product.price) };
+}
+
 export const productService = {
   async listProducts(restaurantId: string, page = 1, limit = 10, search = "", categoryId?: string) {
     const skip = (page - 1) * limit;
@@ -27,32 +32,35 @@ export const productService = {
       db.product.count({ where }),
     ]);
 
-    return { products, total, page, limit };
+    return { products: products.map(serializeProduct), total, page, limit };
   },
 
   async getProduct(id: string) {
-    return db.product.findUnique({
+    const product = await db.product.findUnique({
       where: { id },
       include: { category: true },
     });
+    return product ? serializeProduct(product) : null;
   },
 
   async createProduct(restaurantId: string, data: CreateProductInput) {
-    return db.product.create({
+    const product = await db.product.create({
       data: {
         ...data,
         restaurantId,
       },
       include: { category: true },
     });
+    return serializeProduct(product);
   },
 
   async updateProduct(id: string, data: UpdateProductInput) {
-    return db.product.update({
+    const product = await db.product.update({
       where: { id },
       data,
       include: { category: true },
     });
+    return serializeProduct(product);
   },
 
   async deleteProduct(id: string) {
@@ -63,10 +71,11 @@ export const productService = {
     const product = await db.product.findUnique({ where: { id } });
     if (!product) throw new Error("Product not found");
 
-    return db.product.update({
+    const updated = await db.product.update({
       where: { id },
       data: { isActive: !product.isActive },
     });
+    return serializeProduct(updated);
   },
 
   async duplicateProduct(id: string) {
@@ -74,12 +83,13 @@ export const productService = {
     if (!product) throw new Error("Product not found");
 
     const { id: _, ...data } = product;
-    return db.product.create({
+    const created = await db.product.create({
       data: {
         ...data,
         name: `${product.name} (Cópia)`,
       },
       include: { category: true },
     });
+    return serializeProduct(created);
   },
 };

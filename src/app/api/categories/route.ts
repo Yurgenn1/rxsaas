@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { mockStore } from "@/lib/mockStore";
+import { categoryService } from "@/services/categoryService";
+import { createCategorySchema } from "@/lib/validations/category";
+import { getDefaultRestaurantId } from "@/lib/restaurant";
 
 export async function GET(request: NextRequest) {
   try {
@@ -7,9 +9,9 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
     const search = searchParams.get("search") || "";
-    const restaurantId = searchParams.get("restaurantId") || "default";
 
-    const result = mockStore.categories.list(restaurantId, page, limit, search);
+    const restaurantId = await getDefaultRestaurantId();
+    const result = await categoryService.listCategories(restaurantId, page, limit, search);
 
     return NextResponse.json({ success: true, data: result });
   } catch (error) {
@@ -24,16 +26,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    const validatedData = createCategorySchema.parse(body);
 
-    if (!body.name || body.name.trim().length < 2) {
-      throw new Error("Nome deve ter no mínimo 2 caracteres");
-    }
-
-    const category = mockStore.categories.create({
-      name: body.name,
-      description: body.description || null,
-      restaurantId: body.restaurantId || "default",
-    });
+    const restaurantId = await getDefaultRestaurantId();
+    const category = await categoryService.createCategory(restaurantId, validatedData);
 
     return NextResponse.json({ success: true, data: category }, { status: 201 });
   } catch (error: any) {

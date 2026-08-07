@@ -1,82 +1,106 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { DndContext, type DragEndEvent } from "@dnd-kit/core";
+
+import { useOrders, type Order, type OrderStatus } from "@/hooks/useOrders";
+import { KanbanColumn } from "@/components/admin/kanban-column";
+import { Input } from "@/components/ui/input";
+
+const COLUMNS: { status: OrderStatus; title: string; colorClass: string }[] = [
+  { status: "PENDING", title: "Pendente", colorClass: "bg-amber-500" },
+  { status: "CONFIRMED", title: "Confirmado", colorClass: "bg-blue-500" },
+  { status: "PREPARING", title: "Preparando", colorClass: "bg-orange-500" },
+  { status: "READY", title: "Pronto", colorClass: "bg-primary" },
+  { status: "COMPLETED", title: "Completo", colorClass: "bg-emerald-500" },
+];
+
 export default function OrdersPage() {
+  const { orders, setLimit, loading, error, refetch } = useOrders();
+  const [localOrders, setLocalOrders] = useState<Order[]>([]);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    setLimit(100);
+  }, [setLimit]);
+
+  useEffect(() => {
+    setLocalOrders(orders);
+  }, [orders]);
+
+  const filtered = localOrders.filter(
+    (o) =>
+      o.status !== "CANCELLED" &&
+      (search === "" || o.orderNumber.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  async function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over) return;
+
+    const orderId = active.id as string;
+    const newStatus = over.id as OrderStatus;
+    const order = localOrders.find((o) => o.id === orderId);
+    if (!order || order.status === newStatus) return;
+
+    setLocalOrders((prev) =>
+      prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o))
+    );
+
+    try {
+      const response = await fetch(`/api/orders/${orderId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const result = await response.json();
+      if (!result.success) throw new Error(result.error);
+    } catch (err) {
+      console.error("🚨 [OrdersPage] Failed to update status:", err);
+      refetch();
+    }
+  }
+
   return (
-    <div>
-      {/* Page Header */}
-      <div className="mb-8">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-50 mb-2">
-            📋 Pedidos
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            Acompanhe e gerencie todos os pedidos dos seus clientes
+          <h1 className="text-2xl font-bold">Pedidos</h1>
+          <p className="text-muted-foreground text-sm">
+            Arraste os cards para atualizar o status
           </p>
         </div>
+        <Input
+          placeholder="Buscar por número..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-xs"
+        />
       </div>
 
-      {/* Filters */}
-      <div className="mb-6 flex gap-4 items-end">
-        <div className="flex-1">
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-            Buscar
-          </label>
-          <input
-            type="text"
-            placeholder="🔍 Buscar por número do pedido ou cliente..."
-            className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-50 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#E85D5D] focus:border-transparent"
-          />
+      {error && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-destructive text-sm">
+          ❌ {error}
         </div>
-        <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-            Status
-          </label>
-          <select className="px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-50 focus:outline-none focus:ring-2 focus:ring-[#E85D5D] focus:border-transparent">
-            <option value="">Todos os status</option>
-            <option value="pending">⏳ Pendente</option>
-            <option value="confirmed">✅ Confirmado</option>
-            <option value="preparing">👨‍🍳 Preparando</option>
-            <option value="ready">🎯 Pronto</option>
-            <option value="completed">✨ Completo</option>
-            <option value="cancelled">❌ Cancelado</option>
-          </select>
-        </div>
-      </div>
+      )}
 
-      {/* Empty State */}
-      <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-12 text-center">
-        <div className="text-6xl mb-4">🚀</div>
-        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-50 mb-2">
-          Nenhum pedido ainda
-        </h3>
-        <p className="text-slate-600 dark:text-slate-400 mb-6">
-          Os pedidos dos seus clientes aparecerão aqui quando começarem a chegar.
-        </p>
-        <a
-          href="/"
-          className="inline-block px-6 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-900 dark:text-slate-50 rounded-lg font-medium transition"
-        >
-          Ir para Dashboard
-        </a>
-      </div>
-
-      {/* Stats */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-          <p className="text-slate-600 dark:text-slate-400 text-sm">Pedidos Hoje</p>
-          <p className="text-2xl font-bold text-slate-900 dark:text-slate-50">0</p>
-        </div>
-        <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-          <p className="text-slate-600 dark:text-slate-400 text-sm">Pendentes</p>
-          <p className="text-2xl font-bold text-[#E85D5D]">0</p>
-        </div>
-        <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-          <p className="text-slate-600 dark:text-slate-400 text-sm">Preparando</p>
-          <p className="text-2xl font-bold text-amber-600">0</p>
-        </div>
-        <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-4">
-          <p className="text-slate-600 dark:text-slate-400 text-sm">Completos</p>
-          <p className="text-2xl font-bold text-green-600">0</p>
-        </div>
-      </div>
+      {loading && localOrders.length === 0 ? (
+        <p className="text-muted-foreground">⏳ Carregando pedidos...</p>
+      ) : (
+        <DndContext onDragEnd={handleDragEnd}>
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            {COLUMNS.map((col) => (
+              <KanbanColumn
+                key={col.status}
+                status={col.status}
+                title={col.title}
+                colorClass={col.colorClass}
+                orders={filtered.filter((o) => o.status === col.status)}
+              />
+            ))}
+          </div>
+        </DndContext>
+      )}
     </div>
   );
 }

@@ -1,6 +1,5 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -53,6 +52,7 @@ model Restaurant {
   categories  Category[]
   products    Product[]
   orders      Order[]
+  tables      Table[]
   promotions  Promotion[] @relation("Promotions")
 
   createdAt   DateTime @default(now())
@@ -265,6 +265,21 @@ model Order {
   customerId  String
   customer    User @relation(fields: [customerId], references: [id], onDelete: SetNull)
 
+  // Dados de contato do cliente real (pedido self-service, sem login)
+  customerName  String?
+  customerPhone String?
+
+  // Entrega
+  deliveryAddress String?
+
+  // Comer no local: mesa + comanda
+  tableId     String?
+  table       Table? @relation(fields: [tableId], references: [id], onDelete: SetNull)
+  comandaNumber Int?
+
+  // Pagamento (sem gateway ainda — combinado por fora, ex: WhatsApp)
+  paymentMethod String? // PIX, DINHEIRO, CARTAO_ENTREGA
+
   items       OrderItem[]
 
   // Valores
@@ -291,6 +306,26 @@ model Order {
   @@index([status])
   @@index([orderType])
   @@index([scheduledFor])
+  @@index([tableId])
+}
+
+// ============ MESAS (MÓDULO 3: Pedidos - Comer no local) ============
+model Table {
+  id          String   @id @default(cuid())
+  number      Int
+  capacity    Int?
+  isActive    Boolean  @default(true)
+
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  orders      Order[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([restaurantId, number])
+  @@index([restaurantId])
 }
 
 enum OrderStatus {

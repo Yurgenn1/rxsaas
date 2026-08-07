@@ -1,130 +1,131 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { fetchWithValidation } from "@/lib/validators";
+import { useState } from "react";
+import Link from "next/link";
+import { Plus } from "lucide-react";
+
+import { useCategories } from "@/hooks/useCategories";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const { categories, total, search, setSearch, loading } = useCategories();
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const result = await fetchWithValidation("/api/categories");
-        setCategories(result.data?.categories || []);
-      } catch (error) {
-        console.error("🚨 [CategoriesPage]", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadCategories();
-  }, []);
-
-  const filtered = categories.filter(
-    (c) =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      (c.description && c.description.toLowerCase().includes(search.toLowerCase()))
-  );
+  const filtered = categories.filter((c) => {
+    if (statusFilter === "active") return c.isActive;
+    if (statusFilter === "inactive") return !c.isActive;
+    return true;
+  });
 
   return (
-    <div>
-      {/* Page Header */}
-      <div className="mb-8 flex justify-between items-start">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-slate-50 mb-2">
-            📂 Categorias
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            Organize o cardápio em categorias para facilitar a navegação
+          <h1 className="text-2xl font-bold">Categorias</h1>
+          <p className="text-muted-foreground text-sm">
+            Organize o cardápio em categorias ({total} no total)
           </p>
         </div>
-        <a
-          href="/admin/categories/create"
-          className="px-6 py-3 bg-[#E85D5D] hover:bg-[#D84C4C] text-white rounded-lg font-medium transition shadow-md hover:shadow-lg"
-        >
-          + Adicionar Categoria
-        </a>
+        <Button render={<Link href="/admin/categories/create" />} nativeButton={false}>
+          <Plus />
+          Nova Categoria
+        </Button>
       </div>
 
-      {/* Search and Filters */}
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="🔍 Buscar categorias por nome..."
+      <div className="flex gap-3">
+        <Input
+          placeholder="Buscar categorias..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-50 placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#E85D5D] focus:border-transparent"
+          className="max-w-sm"
         />
+        <Select
+          value={statusFilter}
+          onValueChange={(value) => setStatusFilter(value ?? "all")}
+          items={{ all: "Todos os status", active: "Ativos", inactive: "Inativos" }}
+        >
+          <SelectTrigger className="w-40">
+            <SelectValue placeholder="Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos os status</SelectItem>
+            <SelectItem value="active">Ativos</SelectItem>
+            <SelectItem value="inactive">Inativos</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
-      {/* Loading State */}
-      {loading ? (
-        <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-12 text-center">
-          <p className="text-slate-600 dark:text-slate-400">⏳ Carregando categorias...</p>
-        </div>
-      ) : filtered.length === 0 ? (
-        /* Empty State */
-        <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-12 text-center">
-          <div className="text-6xl mb-4">📋</div>
-          <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-50 mb-2">
-            {categories.length === 0 ? "Nenhuma categoria criada" : "Nenhuma categoria encontrada"}
-          </h3>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
-            {categories.length === 0
-              ? "Comece criando sua primeira categoria para organizar seus produtos."
-              : "Tente ajustar sua busca."}
-          </p>
-          <a
-            href="/admin/categories/create"
-            className="inline-block px-6 py-2 bg-[#E85D5D] hover:bg-[#D84C4C] text-white rounded-lg font-medium transition"
-          >
-            {categories.length === 0 ? "Criar Primeira Categoria" : "Criar Categoria"}
-          </a>
-        </div>
-      ) : (
-        /* Categories List */
-        <div className="space-y-4">
-          {filtered.map((category) => (
-            <a
-              key={category.id}
-              href={`/admin/categories/${category.id}`}
-              className="block bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 p-6 hover:shadow-md transition flex justify-between items-center"
-            >
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-50">
-                  {category.name}
-                </h3>
-                {category.description && (
-                  <p className="text-slate-600 dark:text-slate-400 text-sm mt-1">
-                    {category.description}
-                  </p>
-                )}
-              </div>
-              <div className="flex items-center gap-4">
-                <span
-                  className={`px-3 py-1 rounded-full text-sm ${
-                    category.isActive
-                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                      : "bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-200"
-                  }`}
-                >
-                  {category.isActive ? "✅ Ativo" : "⏸️ Inativo"}
-                </span>
-              </div>
-            </a>
-          ))}
-        </div>
-      )}
-
-      {/* Tips */}
-      <div className="mt-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-        <p className="text-sm text-blue-900 dark:text-blue-200">
-          💡 <strong>Dica:</strong> Organize suas categorias por tipo de produto (Pizzas, Bebidas, Sobremesas, etc.)
-        </p>
-      </div>
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nome</TableHead>
+                <TableHead>Descrição</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                    Carregando...
+                  </TableCell>
+                </TableRow>
+              ) : filtered.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                    Nenhuma categoria encontrada.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filtered.map((category) => (
+                  <TableRow key={category.id}>
+                    <TableCell className="font-medium">{category.name}</TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {category.description || "—"}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={category.isActive ? "default" : "secondary"}
+                      >
+                        {category.isActive ? "Ativo" : "Inativo"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Link
+                        href={`/admin/categories/${category.id}`}
+                        className="text-primary hover:underline text-sm"
+                      >
+                        Editar
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }
