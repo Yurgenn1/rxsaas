@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 
 import { db } from "@/lib/db";
@@ -24,10 +23,22 @@ export default async function CardapioPage() {
       })
     : [];
 
+  const featuredTiles = [
+    categories.find((c) => c.name === "Pizzas Salgadas") ?? categories[0],
+    categories.find((c) => c.name === "Sobremesas") ?? categories[categories.length - 1],
+  ]
+    .filter((c): c is (typeof categories)[number] => Boolean(c))
+    .map((c) => ({
+      id: c.id,
+      name: c.name,
+      image: c.products.find((p) => p.image)?.image,
+    }))
+    .filter((t) => Boolean(t.image));
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      {/* Hero banner */}
-      <div className="relative h-56 md:h-72 w-full overflow-hidden">
+      {/* Hero */}
+      <div className="relative h-[420px] md:h-[520px] w-full overflow-hidden">
         <Image
           src="/menu/hero-banner.jpg"
           alt="Ambiente do restaurante"
@@ -35,28 +46,65 @@ export default async function CardapioPage() {
           priority
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-black/10" />
-        <div className="absolute top-4 right-4 flex items-center gap-2">
-          <span className="bg-white/90 dark:bg-slate-900/90 text-slate-900 dark:text-slate-50 text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5">
-            <span className="size-1.5 rounded-full bg-emerald-500" />
-            Aberto agora
-          </span>
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 px-4 md:px-8 pb-4 flex items-end gap-4">
-          <div className="size-16 md:size-20 rounded-2xl bg-[#E85D5D] border-4 border-white dark:border-slate-950 shadow-lg flex items-center justify-center shrink-0">
-            <span className="text-white font-bold text-2xl md:text-3xl">R</span>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/20" />
+        <div className="absolute inset-0 flex flex-col justify-center max-w-3xl mx-auto px-6 md:px-8">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="size-12 md:size-14 rounded-xl bg-[#E85D5D] flex items-center justify-center shrink-0 shadow-lg">
+              <span className="text-white font-bold text-xl md:text-2xl">R</span>
+            </div>
+            <span className="bg-white/15 backdrop-blur text-white text-xs font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-white/20">
+              <span className="size-1.5 rounded-full bg-emerald-400" />
+              Aberto agora
+            </span>
           </div>
-          <div className="pb-1">
-            <h1 className="text-white font-bold text-xl md:text-3xl drop-shadow-sm">RXSAAS Pizzaria</h1>
-            <p className="text-white/80 text-sm hidden md:block">
-              Massa artesanal · Ingredientes selecionados
-            </p>
-          </div>
+          <h1 className="text-white font-bold text-3xl md:text-5xl leading-tight drop-shadow-sm max-w-md">
+            Pizza artesanal,
+            <br />
+            feita com calma.
+          </h1>
+          <p className="text-white/85 text-sm md:text-base mt-3 max-w-sm">
+            Massa de fermentação lenta e ingredientes selecionados, com o pedido enviado direto pro nosso
+            WhatsApp.
+          </p>
+          <a
+            href="#menu"
+            className="mt-6 inline-flex items-center gap-2 w-fit px-6 py-3 bg-[#E85D5D] hover:bg-[#D84C4C] text-white font-semibold text-sm rounded-lg transition shadow-lg"
+          >
+            Ver cardápio
+          </a>
         </div>
       </div>
 
+      {/* Featured category tiles */}
+      {featuredTiles.length > 0 && (
+        <div className="max-w-3xl mx-auto px-4 -mt-10 relative z-10 grid grid-cols-2 gap-3 pb-2">
+          {featuredTiles.map((tile) => (
+            <a
+              key={tile.id}
+              href={`#${tile.id}`}
+              className="relative rounded-xl overflow-hidden h-28 md:h-36 group shadow-lg"
+            >
+              <Image
+                src={tile.image!}
+                alt={tile.name}
+                fill
+                className="object-cover group-hover:scale-105 transition duration-300"
+                sizes="(max-width: 640px) 50vw, 340px"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+              <div className="absolute bottom-3 left-3">
+                <p className="text-white font-bold text-sm md:text-base drop-shadow-sm">{tile.name}</p>
+                <span className="text-white/85 text-xs">Ver mais →</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+
       {/* Sticky category nav */}
-      <nav className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 overflow-x-auto">
+      <nav
+        id="menu"
+        className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 overflow-x-auto">
         <div className="max-w-3xl mx-auto px-4 flex gap-1 py-2 min-w-max md:min-w-0">
           {categories.map((c) => (
             <a
@@ -116,9 +164,6 @@ export default async function CardapioPage() {
           <p className="mt-1">
             Fotos ilustrativas com licença aberta (Creative Commons) via Openverse.
           </p>
-          <Link href="/" className="text-[#E85D5D] hover:underline mt-2 inline-block">
-            ← Voltar para o site
-          </Link>
         </div>
       </footer>
     </div>
