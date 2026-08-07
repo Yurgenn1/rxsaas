@@ -27,12 +27,32 @@ interface CardapioProduct {
 }
 
 export interface CardapioCreatePayload {
-  name: string;
+  // New field names (preferred)
+  name?: string;
   description?: string;
-  price: number;
-  categoryId: string;
+  price?: number;
+  categoryId?: string;
   image?: string;
   isAvailable?: boolean;
+  // Old field names (for backward compatibility with page)
+  nome?: string;
+  descricao?: string;
+  precoCusto?: number;
+  precoVenda?: number;
+  categoriaId?: string;
+  imagem?: string;
+}
+
+// Helper function to normalize payload - converts old field names to new ones
+function normalizePayload(data: CardapioCreatePayload) {
+  return {
+    name: data.name || data.nome || "",
+    description: data.description || data.descricao || "",
+    price: data.price ?? data.precoCusto ?? data.precoVenda ?? 0,
+    categoryId: data.categoryId || data.categoriaId || "",
+    isActive: data.isAvailable !== undefined ? data.isAvailable : true,
+    isFeatured: false,
+  };
 }
 
 export function useCardapio() {
@@ -87,10 +107,11 @@ export function useCardapio() {
   const createProduto = useCallback(
     async (data: CardapioCreatePayload) => {
       try {
+        const normalizedData = normalizePayload(data);
         const response = await fetch("/api/products", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
+          body: JSON.stringify(normalizedData),
         });
 
         if (!response.ok) {
@@ -125,10 +146,11 @@ export function useCardapio() {
   const updateProduto = useCallback(
     async (id: string, data: Partial<CardapioCreatePayload>) => {
       try {
+        const normalizedData = normalizePayload(data as CardapioCreatePayload);
         const response = await fetch(`/api/products/${id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data),
+          body: JSON.stringify(normalizedData),
         });
 
         if (!response.ok) {
